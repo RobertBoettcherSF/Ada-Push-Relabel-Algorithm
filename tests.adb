@@ -74,7 +74,7 @@ begin
    end;
 
    begin
-      declare Result : Flow_Type := Highest_Label_Max_Flow(Simple_G, 1, 0); begin null; end;
+      declare Result : Flow_Type := Highest_Label_Max_Flow(Simple_G, 1, 99); begin null; end;
       Assert(False, "Failed to catch Sink out of bounds");
    exception
       when Source_Sink_Error => Assert(True, "4.3 Raised Source_Sink_Error when Sink is outside matrix bounds.");
