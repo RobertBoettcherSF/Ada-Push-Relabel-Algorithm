@@ -43,7 +43,7 @@ package body Push_Relabel is
       
       -- Saturate all outgoing edges from the source
       for V in C'Range(1) loop
-         if V /= Source and then C(Source, V) > 0 then
+         if (V /= Source) and then (C(Source, V) > 0) then
             declare
                Cap : constant Integer := Integer(C(Source, V));
             begin
@@ -64,18 +64,18 @@ package body Push_Relabel is
       U, V : Node_Id
    ) is
       Cf : constant Integer := Integer(C(U, V)) - F(U, V);
-      Delta : Integer;
+      Push_Amount : Integer;
    begin
       if E(U) < Cf then
-         Delta := E(U);
+         Push_Amount := E(U);
       else
-         Delta := Cf;
+         Push_Amount := Cf;
       end if;
       
-      F(U, V) := F(U, V) + Delta;
-      F(V, U) := F(V, U) - Delta; -- Maintain skew symmetry
-      E(U) := E(U) - Delta;
-      E(V) := E(V) + Delta;
+      F(U, V) := F(U, V) + Push_Amount;
+      F(V, U) := F(V, U) - Push_Amount; -- Maintain skew symmetry
+      E(U) := E(U) - Push_Amount;
+      E(V) := E(V) + Push_Amount;
    end Push;
 
    -- HELPER: Relabels node U to create a new valid gradient for pushing
@@ -118,14 +118,14 @@ package body Push_Relabel is
       loop
          Active_Found := False;
          for U in Graph'Range(1) loop
-            if U /= Source and U /= Sink and E(U) > 0 then
+            if (U /= Source) and then (U /= Sink) and then (E(U) > 0) then
                Active_Found := True;
                
                declare
                   Pushed : Boolean := False;
                begin
                   for V in Graph'Range(1) loop
-                     if Integer(Graph(U, V)) - F(U, V) > 0 and then H(U) = H(V) + 1 then
+                     if (Integer(Graph(U, V)) - F(U, V) > 0) and then (H(U) = H(V) + 1) then
                         Push(Graph, F, E, U, V);
                         Pushed := True;
                         exit; 
@@ -186,7 +186,7 @@ package body Push_Relabel is
 
       -- Initial enqueue
       for V in Graph'Range(1) loop
-         if V /= Source and V /= Sink and E(V) > 0 then
+         if (V /= Source) and then (V /= Sink) and then (E(V) > 0) then
             Enqueue(V);
          end if;
       end loop;
@@ -199,10 +199,10 @@ package body Push_Relabel is
                Pushed : Boolean := False;
             begin
                for V in Graph'Range(1) loop
-                  if Integer(Graph(U, V)) - F(U, V) > 0 and then H(U) = H(V) + 1 then
+                  if (Integer(Graph(U, V)) - F(U, V) > 0) and then (H(U) = H(V) + 1) then
                      Push(Graph, F, E, U, V);
                      Pushed := True;
-                     if V /= Source and V /= Sink and then E(V) > 0 then
+                     if (V /= Source) and then (V /= Sink) and then (E(V) > 0) then
                         Enqueue(V);
                      end if;
                      exit; 
@@ -240,7 +240,7 @@ package body Push_Relabel is
          
          -- Find active node with maximum height
          for U in Graph'Range(1) loop
-            if U /= Source and U /= Sink and E(U) > 0 then
+            if (U /= Source) and then (U /= Sink) and then (E(U) > 0) then
                if Integer(H(U)) > Highest_H then
                   Highest_H := Integer(H(U));
                   Best_U := U;
@@ -255,7 +255,7 @@ package body Push_Relabel is
             Pushed : Boolean := False;
          begin
             for V in Graph'Range(1) loop
-               if Integer(Graph(U, V)) - F(U, V) > 0 and then H(U) = H(V) + 1 then
+               if (Integer(Graph(U, V)) - F(U, V) > 0) and then (H(U) = H(V) + 1) then
                   Push(Graph, F, E, U, V);
                   Pushed := True;
                   exit;
